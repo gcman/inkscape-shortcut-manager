@@ -2,7 +2,7 @@ from Xlib import X, XK
 
 from clipboard import copy
 from constants import TARGET
-from vim import open_vim
+from emacs import open_emacs
 import text
 import styles
 
@@ -61,11 +61,12 @@ def normal_mode(self, event, char):
     pressed.clear()
 
 def handle_single_key(self, ev):
+    print(ev)
     if ev == 't':
-        open_vim(self, compile_latex=False)
+        open_emacs(self, compile_latex=False)
     elif ev == 'Shift+t':
-        # Vim mode prerendered
-        open_vim(self, compile_latex=True)
+        # Emacs mode prerendered
+        open_emacs(self, compile_latex=True)
     elif ev == 'a':
         # Add objects mode
         self.mode = styles.object_mode
@@ -103,11 +104,7 @@ def handle_single_key(self, ev):
     return True
 
 def paste_style(self, combination):
-    """
-
-    This creates the style depending on the combination of keys.
-
-    """
+    """ This creates the style depending on the combination of keys. """
 
     # Stolen from TikZ
     pt = 1.327 # pixels

@@ -5,19 +5,16 @@ from constants import TARGET
 from clipboard import copy
 from Xlib import X
 
-def open_vim(self, compile_latex):
-    f = tempfile.NamedTemporaryFile(mode='w+', delete=False)
+def open_emacs(self, compile_latex):
+    f = tempfile.NamedTemporaryFile(mode='w+', suffix='.inkmath',delete=False)
 
-    f.write('$$')
+    f.write('\(\)')
     f.close()
 
     subprocess.run([
-        'urxvt',
-        '-fn', 'xft:Iosevka Term:pixelsize=24',
-        '-geometry', '60x5',
-        '-name', 'popup-bottom-center',
-        '-e', "vim",
-        "-u", "~/.minimal-tex-vimrc",
+        'emacsclient',
+        '-c',
+        '-F', '((width . 60) (height . 5) (title . \"floatingEmacs\"))',
         f"{f.name}",
     ])
 
@@ -32,7 +29,7 @@ def open_vim(self, compile_latex):
             svg = f"""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
             <svg>
               <text
-                 style="font-size:10px; font-family:'Iosevka Term';-inkscape-font-specification:'Iosevka Term, Normal';fill:#000000;fill-opacity:1;stroke:none;"
+                 style="font-size:10px; font-family:'Hack';-inkscape-font-specification:'Hack, Normal';fill:#000000;fill-opacity:1;stroke:none;"
                  xml:space="preserve"><tspan sodipodi:role="line" >{latex}</tspan></text>
             </svg> """
             copy(svg, target=TARGET)
@@ -40,14 +37,9 @@ def open_vim(self, compile_latex):
             m = tempfile.NamedTemporaryFile(mode='w+', delete=False)
             m.write(r"""
                 \documentclass[12pt,border=12pt]{standalone}
-
                 \usepackage[utf8]{inputenc}
                 \usepackage[T1]{fontenc}
-                \usepackage{textcomp}
-                \usepackage[dutch]{babel}
-                \usepackage{amsmath, amssymb}
-                \newcommand{\R}{\mathbb R}
-
+                \usepackage{gm-math}
                 \begin{document}
             """ + latex + r"""\end{document}""")
             m.close()

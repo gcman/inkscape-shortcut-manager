@@ -67,8 +67,6 @@ def paste_mode(type_, self, event, char):
         pressed.append(char)
         return check(type_, self, ''.join(pressed))
 
-ROFI_THEME = '~/.config/rofi/ribbon.rasi'
-
 def save_mode(type_, self):
     self.press('c', X.ControlMask)
     svg = get(TARGET)
@@ -81,7 +79,6 @@ def save_mode(type_, self):
     _, index, name = rofi(
         'Save as',
         names,
-        ['-theme', ROFI_THEME],
         fuzzy=False
     )
 
