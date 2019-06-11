@@ -10,11 +10,11 @@ import normal
 
 pressed = []
 
-script_path = Path(os.path.realpath(__file__)).parents[0]
+config_path = Path.home() / ".config" / "inkscape-shortcut-manager"
 
 data_dirs = {
-    'style': script_path / 'data' / 'styles',
-    'object': script_path / 'data' / 'objects',
+    'style': config_path / 'styles',
+    'object': config_path / 'objects',
 }
 
 
@@ -38,7 +38,6 @@ def check(type_, self, name):
 
         sleep(0.5) # Give the user some time when an object is added.
         return back_to_normal(self)
-
 
 def back_to_normal(self):
     self.mode = normal.normal_mode
@@ -87,13 +86,13 @@ def save_mode(type_, self):
         _, index, yn = rofi(
             f'Overwrite {name}?',
             ['y', 'n'],
-            ['-theme', ROFI_THEME, '-auto-select'],
             fuzzy=False
         )
         if yn == 'n':
             return
+    if name != "":
+        (directory / f'{name}.svg').write_text(get(TARGET))
 
-    (directory / f'{name}.svg').write_text(get(TARGET))
 
 def style_mode(self, event, char):
     paste_mode('style', self, event, char)
