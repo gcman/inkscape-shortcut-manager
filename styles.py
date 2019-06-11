@@ -43,6 +43,7 @@ def back_to_normal(self):
     self.mode = normal.normal_mode
     pressed.clear()
 
+    
 def paste_mode(type_, self, event, char):
     print('paste mode')
     if event.state & X.ControlMask:
