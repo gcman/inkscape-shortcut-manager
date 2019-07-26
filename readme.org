@@ -1,0 +1,2 @@
+* Inkscape shortcut manager
+Originally by [[https://castel.dev/post/lecture-notes-2][Gilles Castel]]. Only works on Linux.

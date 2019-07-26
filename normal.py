@@ -63,7 +63,12 @@ def normal_mode(self, event, char):
 def handle_single_key(self, ev):
     print(ev)
     if ev == 't':
+<<<<<<< HEAD
         open_emacs(self, compile_latex=False)
+=======
+        # Vim mode
+        open_vim(self, compile_latex=False)
+>>>>>>> upstream/master
     elif ev == 'Shift+t':
         # Emacs mode prerendered
         open_emacs(self, compile_latex=True)
@@ -202,6 +207,6 @@ def paste_style(self, combination):
                             for key, value in sorted(style.items(), key=lambda x: x[0])
                            )
     svg += f'<inkscape:clipboard style="{style_string}" /></svg>'
-    
+
     copy(svg, target=TARGET)
     self.press('v', X.ControlMask | X.ShiftMask)
