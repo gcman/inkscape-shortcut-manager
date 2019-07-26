@@ -63,12 +63,7 @@ def normal_mode(self, event, char):
 def handle_single_key(self, ev):
     print(ev)
     if ev == 't':
-<<<<<<< HEAD
         open_emacs(self, compile_latex=False)
-=======
-        # Vim mode
-        open_vim(self, compile_latex=False)
->>>>>>> upstream/master
     elif ev == 'Shift+t':
         # Emacs mode prerendered
         open_emacs(self, compile_latex=True)

@@ -1,135 +1,46 @@
+import sysb
+import subprocess
 from pathlib import Path
-from time import sleep
-import os
-from Xlib import X
 
-from clipboard import copy, get
-from constants import TARGET
-from config import config, CONFIG_PATH
-from rofi import rofi
-import normal
+def open_editor(filename):
+    subprocess.run([
+        'emacsclient',
+        '-c',
+        '-F', '((width . 60) (height . 5) (title . \"floatingEmacs\"))',
+        "{filename}",
+    ])
 
-pressed = []
+def latex_document(latex):
+    return r"""
+        \documentclass[12pt,border=12pt]{standalone}
 
-<<<<<<< HEAD
-config_path = Path.home() / ".config" / "inkscape-shortcut-manager"
+        \usepackage[utf8]{inputenc}
+        \usepackage[T1]{fontenc}
+        \usepackage{gm-math}
 
-data_dirs = {
-    'style': config_path / 'styles',
-    'object': config_path / 'objects',
-=======
-def create_if_not_exists(directory):
-    if not directory.exists():
-        directory.mkdir(parents=True)
-    return directory
+        \begin{document}
+    """ + latex + r"\end{document}"
 
-data_dirs = {
-    'style': create_if_not_exists(CONFIG_PATH / 'styles'),
-    'object': create_if_not_exists(CONFIG_PATH / 'objects'),
->>>>>>> upstream/master
+config = {
+    # For example '~/.config/rofi/ribbon.rasi' or None
+    'rofi_theme': None,
+    # Font that's used to add text in inkscape
+    'font': 'monospace',
+    'font_size': 10,
+    'open_editor': open_editor,
+    'latex_document': latex_document,
 }
 
-rofi_theme_params = ['-theme', config['rofi_theme']] if 'rofi_theme' in config else []
+# From https://stackoverflow.com/a/67692
+def import_file(name, path):
+    import importlib.util as util
+    spec = util.spec_from_file_location(name, path)
+    module = util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
-print(data_dirs)
+CONFIG_PATH = Path('~/.config/inkscape-shortcut-manager').expanduser()
 
-def check(type_, self, name):
-    files = list(data_dirs[type_].iterdir())
-    names = [f.stem for f in files]
-
-    filtered = list(i for i, n in enumerate(names) if n.startswith(name))
-
-    if len(filtered) == 0:
-        pressed.clear()
-        return back_to_normal(self)
-
-    if len(filtered) == 1:
-        index = filtered[0]
-        copy(files[index].read_text(), target=TARGET)
-        if type_ == 'style':
-            self.press('v', X.ShiftMask | X.ControlMask)
-        else:
-            self.press('v', X.ControlMask)
-
-        sleep(0.5) # Give the user some time when an object is added.
-        return back_to_normal(self)
-
-def back_to_normal(self):
-    self.mode = normal.normal_mode
-    pressed.clear()
-
-    
-def paste_mode(type_, self, event, char):
-    print('paste mode')
-    if event.state & X.ControlMask:
-        # there are modifiers
-        # eg. X.ControlMask
-        # ~or X.ShiftMask~
-        return
-
-    if not char:
-        return
-
-    if event.type != X.KeyRelease:
-        return
-
-    if char == 'Escape':
-        if len(pressed) == 0:
-            return back_to_normal(self)
-        else:
-            pressed.clear()
-    else:
-        pressed.append(char)
-        return check(type_, self, ''.join(pressed))
-
-<<<<<<< HEAD
-=======
-
->>>>>>> upstream/master
-def save_mode(type_, self):
-    self.press('c', X.ControlMask)
-    svg = get(TARGET)
-    if not 'svg' in svg:
-        return
-
-    directory = data_dirs[type_]
-    files = list(directory.iterdir())
-    names = [f.stem for f in files]
-    _, index, name = rofi(
-        'Save as',
-        names,
-<<<<<<< HEAD
-=======
-        rofi_theme_params,
->>>>>>> upstream/master
-        fuzzy=False
-    )
-
-    if index != -1:
-        # File exists
-        _, index, yn = rofi(
-            f'Overwrite {name}?',
-            ['y', 'n'],
-<<<<<<< HEAD
-=======
-            rofi_theme_params + ['-auto-select'],
->>>>>>> upstream/master
-            fuzzy=False
-        )
-        if yn == 'n':
-            return
-    if name != "":
-        (directory / f'{name}.svg').write_text(get(TARGET))
-
-
-def style_mode(self, event, char):
-    paste_mode('style', self, event, char)
-
-def object_mode(self, event, char):
-    paste_mode('object', self, event, char)
-
-def save_style_mode(self):
-    save_mode('style', self)
-
-def save_object_mode(self):
-    save_mode('object', self)
+if (CONFIG_PATH / 'config.py').exists():
+    userconfig = import_file('config', CONFIG_PATH / 'config.py').config
+    config.update(userconfig)
